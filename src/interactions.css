@@ -11,7 +11,7 @@
 .canvas-stage{touch-action:none;cursor:grab;overscroll-behavior:contain}
 .canvas-stage:active{cursor:grabbing}
 .canvas-tools .zoom-reset{width:auto;min-width:38px;border:0;background:transparent;font:9px ui-monospace,SFMono-Regular,Consolas,monospace}
-.diagram-svg{transform-origin:center center;will-change:transform}
+.diagram-svg{transform-origin:center center}
 .direction-switch button.active{color:#fff}
 .direction-switch button.active span{color:#c8c8ce}
 .export-btn{color:#f5f4f7}
