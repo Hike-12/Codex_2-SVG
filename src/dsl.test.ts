@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parse } from './dsl';
+import { exampleAssets, parse, presets } from './dsl';
 
 describe('diagram DSL', () => {
   it('reads node shapes, labels, icons, images and subtitles', () => {
@@ -43,5 +43,13 @@ describe('diagram DSL', () => {
     const d=parse('A [shape: octagon]');
     expect(d.nodes[0].shape).toBe('card');
     expect(d.errors[0].message).toContain('Unknown shape');
+  });
+  it('ships four parseable templates, including an embedded SVG image demo', () => {
+    expect(presets).toHaveLength(4);
+    for(const preset of presets) expect(parse(preset.source).errors).toEqual([]);
+    const media=parse(presets[3].source);
+    expect(media.nodes.find(n=>n.id==='Avatar')?.image).toBe('@demo-avatar');
+    expect(exampleAssets['demo-avatar']).toMatch(/^data:image\/svg\+xml,/);
+    expect(new Set(media.nodes.map(n=>n.shape))).toEqual(new Set(['circle','diamond','pill','hexagon','cylinder']));
   });
 });

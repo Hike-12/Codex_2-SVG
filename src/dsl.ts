@@ -3,6 +3,9 @@ export type EdgeKind = 'solid' | 'async' | 'stream' | 'sync';
 export type NodeDef = { id: string; label: string; sub?: string; icon?: string; shape: Shape; badge?: string; accent?: string; image?: string; group?: string; position?: { x: number; y: number } };
 export type EdgeDef = { from: string; to: string; kind: EdgeKind; label?: string };
 export type Diagram = { nodes: NodeDef[]; edges: EdgeDef[]; groups: { id: string; label: string; style: string }[]; direction: 'LR' | 'TD'; theme: 'blueprint' | 'noir' | 'paper'; errors: { line: number; message: string }[] };
+export const exampleAssets: Record<string,string> = {
+  'demo-avatar': "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='24' fill='%2367d7ef'/%3E%3Cpath d='M13 33c2-13 20-13 22 0' fill='none' stroke='%2309090b' stroke-width='3'/%3E%3Ccircle cx='24' cy='17' r='7' fill='%2309090b'/%3E%3C/svg%3E"
+};
 
 const unquote = (value: string) => value.trim().replace(/^['"]|['"]$/g, '');
 function attrs(source: string): Record<string, string> {
@@ -144,7 +147,7 @@ CRDT => Postgres : "Persist"
 CRDT -> Snapshots : "Checkpoint"` },
   { name: 'Geometric + Custom Media', source: `direction TD
 theme blueprint
-Avatar [shape: circle, img: data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='24' fill='%2367d7ef'/%3E%3Cpath d='M13 33c2-13 20-13 22 0' fill='none' stroke='%2309090b' stroke-width='3'/%3E%3Ccircle cx='24' cy='17' r='7' fill='%2309090b'/%3E%3C/svg%3E, sub: "Embedded SVG"]
+Avatar [shape: circle, img: @demo-avatar, sub: "Embedded SVG"]
 Start [shape: circle, icon: spark, sub: "Entry"]
 Decision [shape: diamond, icon: search, label: "Route request"]
 API [shape: pill, icon: webhook, badge: "POST"]

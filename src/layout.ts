@@ -4,7 +4,10 @@ export type PlacedEdge = { from: PlacedNode; to: PlacedNode; kind: string; label
 export type GroupBox = { id: string; label: string; x: number; y: number; w: number; h: number; style: string };
 const measure = (n: NodeDef) => {
   if (n.shape === 'circle') return { w: 148, h: 148 };
-  const width = Math.max(174, Math.min(250, 84 + n.label.length * 8 + (n.sub ? n.sub.length * 1.2 : 0)));
+  const mediaSpace = n.icon || n.image ? 53 : 0;
+  const titleWidth = Math.min(n.label.length,20) * 7 + mediaSpace + 34;
+  const subWidth = Math.min(n.sub?.length ?? 0,23) * 5.5 + mediaSpace + 34;
+  const width = Math.max(174, Math.min(280, Math.max(titleWidth,subWidth)));
   const height = n.shape === 'pill' ? 62 : n.sub ? 86 : 76;
   return { w: width, h: height };
 };

@@ -12,8 +12,9 @@ describe('standalone SVG export', () => {
     expect(out).toContain('<clipPath');
     expect(out).toContain('clip-path="url(#avatar)"');
     expect(out).toContain('<animateMotion');
-    expect(out).not.toContain('canvas-grid');
+    expect(out).toContain('class="canvas-grid"');
     expect(out).not.toContain('node-hit');
+    expect(out).toContain('<style>');
   });
   it('removes animated packets for a static export', () => {
     expect(serializeSvg(svg,false)).not.toContain('animateMotion');
