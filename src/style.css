@@ -173,10 +173,6 @@ button { touch-action: manipulation; }
 .canvas-empty-state span { font-size: 22px; }
 .canvas-empty-state small { color: var(--muted); font-size: 11px; }
 .asset-warning { color: #e3a9ad; font-size: 11px; line-height: 1.4; }
-.app-footer { display: flex; height: 36px; flex: none; align-items: center; justify-content: space-between; padding: 0 18px; border-top: 1px solid var(--line); background: var(--panel); color: var(--muted); font-size: 10px; }
-.footer-brand { color: var(--ink); font-weight: 700; }
-.footer-sep { padding: 0 8px; color: var(--line); }
-.footer-right { display: flex; gap: 16px; font: 9px ui-monospace, monospace; letter-spacing: .45px; }
 .menu-toggle { display: none; }
 
 @media (max-width: 1120px) {
@@ -197,7 +193,6 @@ button { touch-action: manipulation; }
   .splitter { display: none; }
   .canvas-pane { min-width: 0; height: min(74vh, 680px); min-height: 480px; flex: none; border-bottom: 1px solid var(--line); }
   .canvas-stage { min-height: 0; }
-  .app-footer { min-height: 38px; }
 }
 
 @media (max-width: 520px) {
@@ -212,8 +207,6 @@ button { touch-action: manipulation; }
   .canvas-tools button { width: 30px; height: 30px; }
   .fit-btn { display: none; }
   .drawer-hint { font-size: 10px; }
-  .app-footer { align-items: flex-start; height: auto; flex-direction: column; gap: 6px; padding: 10px 12px; }
-  .footer-right { flex-wrap: wrap; gap: 5px 12px; font-size: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

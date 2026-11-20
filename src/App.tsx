@@ -111,6 +111,6 @@ export default function App() {
           {n.icon&&!n.image&&<g transform={'translate('+iconX+' '+(n.y+n.h/2+(centered?-32:-12))+')'} className="node-icon"><Icon name={n.icon} width="24" height="24"/></g>}
           <text x={titleX} y={n.y+n.h/2+(centered?22:(n.sub?-3:4))} textAnchor={centered?'middle':undefined} className="node-title">{n.label.length>(centered?16:20)?n.label.slice(0,centered?15:19)+'…':n.label}</text>{n.sub&&<text x={titleX} y={n.y+n.h/2+(centered?37:15)} textAnchor={centered?'middle':undefined} className="node-sub">{n.sub.length>23?n.sub.slice(0,22)+'…':n.sub}</text>}{n.badge&&<g><rect x={n.x+n.w-54} y={n.y+9} width="44" height="16" rx="4" className="node-badge"/><text x={n.x+n.w-32} y={n.y+20} className="node-badge-text" textAnchor="middle">{n.badge}</text></g>}</g>})}
         </svg>{parsed.errors.length>0&&<div className="canvas-empty-state"><span>↯</span><b>Preview paused at line {parsed.errors[0].line}</b><small>Fix the syntax in the editor to continue.</small></div>}<div className="canvas-corner">{model.nodes.length} ELEMENTS <span>·</span> SVG 1.1</div></div></section>
-    </section><footer className="app-footer"><span><span className="footer-brand">glyph/craft</span><span className="footer-sep">/</span> Built for systems that scale.</span><span className="footer-right"><span>DETERMINISTIC LAYOUT</span><span>LOCAL FIRST</span><span>SVG NATIVE</span></span></footer>
+    </section>
   </main>;
 }
