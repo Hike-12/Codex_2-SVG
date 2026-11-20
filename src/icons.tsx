@@ -1,5 +1,6 @@
 import type { SVGProps } from 'react';
-const icons: Record<string, string> = {
+
+const diagramIcons: Record<string, string> = {
   server:'M4 5h16v5H4z M4 14h16v5H4z M7 7.5h.01 M7 16.5h.01 M11 7.5h6 M11 16.5h6',
   database:'M12 3c-4.4 0-8 1.3-8 3s3.6 3 8 3 8-1.3 8-3-3.6-3-8-3z M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6 M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3',
   postgres:'M6 6c1-3 11-3 12 0l1 10-3 4h-3l-1-5-2 2v3H7l-2-4z M9 8h.01 M15 8h.01',
@@ -37,8 +38,39 @@ const icons: Record<string, string> = {
   file:'M6 3h8l5 5v13H6z M14 3v6h5 M9 13h6 M9 17h6',
   spark:'M12 3l1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8z M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z'
 };
-export const iconNames = Object.keys(icons);
+
+const uiIcons: Record<string, string> = {
+  'chevron-down': 'M6 9l6 6 6-6',
+  trash: 'M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6 M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6',
+  x: 'M18 6L6 18 M6 6l12 12',
+  sidebar: 'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M9 4v16',
+  check: 'M20 6L9 17l-5-5',
+  copy: 'M8 4v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7.5L16.5 4H10a2 2 0 0 0-2 2z M4 8v11a2 2 0 0 0 2 2h10',
+  download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3',
+  image: 'M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z M21 15l-5-5L5 19',
+  refresh: 'M1 4v6h6 M23 20v-6h-6 M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15',
+  maximize: 'M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3',
+  minimize: 'M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3'
+};
+
+export const iconNames = Object.keys(diagramIcons);
+
+const allIcons: Record<string, string> = { ...diagramIcons, ...uiIcons };
+
 export function Icon({ name, ...props }: SVGProps<SVGSVGElement> & { name?: string }) {
-  const path = icons[name || ''] || icons.server;
-  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}><path d={path} /></svg>;
+  const path = allIcons[name || ''] || diagramIcons.server;
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d={path} />
+    </svg>
+  );
 }

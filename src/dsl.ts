@@ -151,7 +151,7 @@ Avatar [shape: circle, img: @demo-avatar, sub: "Embedded SVG"]
 Start [shape: circle, icon: spark, sub: "Entry"]
 Decision [shape: diamond, icon: search, label: "Route request"]
 API [shape: pill, icon: webhook, badge: "POST"]
-Compute [shape: hexagon, icon: lambda, accent: "#67D7EF"]
+Compute [shape: hexagon, icon: lambda, accent: "#38bdf8"]
 Store [shape: cylinder, icon: storage]
 Avatar -> Start : "Actor"
 Start -> Decision : "Classify"
