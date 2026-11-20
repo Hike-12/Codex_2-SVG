@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode, type WheelEvent } from 'react';
+﻿import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode, type WheelEvent } from 'react';
 import { Icon, iconNames } from './icons';
 import { layout, type PlacedNode } from './layout';
 import { exampleAssets, parse, presets } from './dsl';
 import { serializeSvg } from './exporter';
 import { Dropdown } from './components/Dropdown';
+import { DocsModal } from './components/DocsModal';
 import './style.css';
 import './interactions.css';
 
@@ -82,7 +83,8 @@ function findEdgeLine(from: string, to: string, src: string): number | null {
 export default function App() {
   const [source, setSource] = useState(() => location.hash ? decodeURIComponent(location.hash.slice(1)) : starter);
   const [template, setTemplate] = useState(presets[0].name);
-  const [theme, setTheme] = useState<'blueprint' | 'noir' | 'paper'>('blueprint');
+  const [theme, setTheme] = useState<'blueprint' | 'noir' | 'paper' | 'frost' | 'editorial'>('blueprint');
+  const [docsOpen, setDocsOpen] = useState(false);
   const [flow, setFlow] = useState(true);
   const [drawer, setDrawer] = useState(() => {
     try {
@@ -97,7 +99,7 @@ export default function App() {
   const [zoom, setZoom] = useState(1);
   const [shareDone, setShareDone] = useState(false);
   const [canvasFullscreen, setCanvasFullscreen] = useState(false);
-  const [syntax, setSyntax] = useState(false);
+
   const [dragging, setDragging] = useState<{ id: string; dx: number; dy: number } | null>(null);
   const [editorWidth, setEditorWidth] = useState<number | null>(null);
   const [resizing, setResizing] = useState(false);
@@ -127,8 +129,12 @@ export default function App() {
   const parsed = useMemo(() => parse(source), [source]);
   const model = useMemo(() => layout(parsed, manual), [parsed, manual]);
 
-  // Deep dark themes with distinctive character (zero cyan neon)
-  const palette = theme === 'paper'
+  // Palettes: dark themes + two light themes
+  const palette = theme === 'frost'
+    ? ['#f8fafc', '#ffffff', '#e2e8f0', '#0f172a', '#64748b', '#f1f5f9', '#2563eb']
+    : theme === 'editorial'
+    ? ['#f7f5f0', '#fffef9', '#e5e1d6', '#1c1917', '#78716c', '#f0ede6', '#4338ca']
+    : theme === 'paper'
     ? ['#060504', '#0c0a08', '#181512', '#eee9e2', '#756c62', '#100d0a', '#d97706']
     : theme === 'noir'
     ? ['#000000', '#060608', '#131315', '#f2f2f4', '#5c5c64', '#09090b', '#e4e4e7']
@@ -458,11 +464,13 @@ export default function App() {
   const themeOptions = [
     { value: 'blueprint', label: 'Carbon Dusk (Slate)', badge: 'Dark' },
     { value: 'noir', label: 'Pure Obsidian (Stealth)', badge: 'Dark' },
-    { value: 'paper', label: 'Espresso Amber (Sepia)', badge: 'Dark' }
+    { value: 'paper', label: 'Espresso Amber (Sepia)', badge: 'Dark' },
+    { value: 'frost', label: 'Nordic Frost', badge: 'Light' },
+    { value: 'editorial', label: 'Editorial Cream', badge: 'Light' }
   ];
   const exportOptions = [
     { value: 'svg', label: 'Animated SVG', icon: 'download' },
-    { value: 'png', label: '2× Retina PNG', icon: 'image' },
+    { value: 'png', label: '2Ã— Retina PNG', icon: 'image' },
     { value: 'copy', label: 'Copy SVG Code', icon: 'copy' }
   ];
 
@@ -501,14 +509,14 @@ export default function App() {
             onClick={() => setDirective('direction', 'LR')}
             title="Left to right layout"
           >
-            LR <span>→</span>
+            LR <span>â†’</span>
           </button>
           <button
             className={parsed.direction === 'TD' ? 'active' : ''}
             onClick={() => setDirective('direction', 'TD')}
             title="Top to down layout"
           >
-            TD <span>↓</span>
+            TD <span>â†“</span>
           </button>
         </div>
 
@@ -535,11 +543,11 @@ export default function App() {
         </button>
 
         <button className="toolbar-btn reset-btn" onClick={reset} title="Reset manual node positions">
-          <span>↻</span> Reset layout
+          <span>â†»</span> Reset layout
         </button>
 
         <button className="toolbar-btn share-btn" onClick={share} title="Copy diagram link to clipboard">
-          <span>{shareDone ? '✓' : '⌁'}</span> {shareDone ? 'Copied' : 'Share'}
+          <span>{shareDone ? 'âœ“' : 'âŒ'}</span> {shareDone ? 'Copied' : 'Share'}
         </button>
 
         <Dropdown
@@ -602,7 +610,7 @@ export default function App() {
                     ))}
                 </div>
                 <div className="drawer-hint">
-                  <span>↳</span> Click an icon to add it to your code
+                  <span>â†³</span> Click an icon to add it to your code
                 </div>
               </>
             ) : (
@@ -621,9 +629,9 @@ export default function App() {
                     accept="image/png,image/jpeg,image/webp,image/svg+xml"
                     onChange={e => upload(e.target.files?.[0])}
                   />
-                  <b>↑</b>
+                  <b>â†‘</b>
                   <strong>Drop an image here</strong>
-                  <span>or browse · PNG, JPG, SVG</span>
+                  <span>or browse Â· PNG, JPG, SVG</span>
                 </label>
                 {assetWarning && <p className="asset-warning">{assetWarning}</p>}
                 {Object.entries(assets).map(([name, url]) => (
@@ -662,12 +670,12 @@ export default function App() {
         >
           <div className="pane-header">
             <div className="pane-title">
-              <span className="code-icon">⌘</span>
+              <span className="code-icon">âŒ˜</span>
               <span>Diagram source</span>
               <span className="language-pill">GLYPH DSL</span>
             </div>
-            <button className="subtle-btn" onClick={() => setSyntax(!syntax)}>
-              Syntax guide <span>↗</span>
+            <button className="subtle-btn" onClick={() => setDocsOpen(true)}>
+              Syntax guide <span>â†—</span>
             </button>
           </div>
 
@@ -730,21 +738,10 @@ export default function App() {
               <i className="status-light" /> Live
             </span>
             <span>
-              {parsed.nodes.length} nodes <b>·</b> {parsed.edges.length} connections
+              {parsed.nodes.length} nodes <b>Â·</b> {parsed.edges.length} connections
             </span>
           </div>
 
-          {syntax && (
-            <div className="syntax-popover">
-              <button onClick={() => setSyntax(false)}>×</button>
-              <h3>Quick syntax</h3>
-              <code>API [icon: gateway, shape: pill]</code>
-              <code>Client -&gt; API : "HTTPS"</code>
-              <code>Worker ~&gt; Queue : "Async event"</code>
-              <code>group "Cluster" {'{'} ... {'}'}</code>
-              <p>Shapes: card, circle, pill, cylinder, diamond, hexagon</p>
-            </div>
-          )}
         </div>
 
         <div
@@ -779,7 +776,7 @@ export default function App() {
             </div>
             <div className="canvas-tools">
               <div className="canvas-tools-group">
-                <button onClick={() => setZoom(z => Math.max(.45, z / 1.12))} aria-label="Zoom out">−</button>
+                <button onClick={() => setZoom(z => Math.max(.45, z / 1.12))} aria-label="Zoom out">âˆ’</button>
                 <button
                   className="zoom-value zoom-reset"
                   onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
@@ -794,7 +791,7 @@ export default function App() {
                   aria-label="Reset view"
                   onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
                 >
-                  ↺
+                  â†º
                 </button>
                 <button
                   className="fullscreen-btn"
@@ -969,7 +966,7 @@ export default function App() {
                       textAnchor={centered ? 'middle' : undefined}
                       className="node-title"
                     >
-                      {n.label.length > (centered ? 16 : 20) ? n.label.slice(0, centered ? 15 : 19) + '…' : n.label}
+                      {n.label.length > (centered ? 16 : 20) ? n.label.slice(0, centered ? 15 : 19) + 'â€¦' : n.label}
                     </text>
                     {n.sub && (
                       <text
@@ -978,7 +975,7 @@ export default function App() {
                         textAnchor={centered ? 'middle' : undefined}
                         className="node-sub"
                       >
-                        {n.sub.length > 23 ? n.sub.slice(0, 22) + '…' : n.sub}
+                        {n.sub.length > 23 ? n.sub.slice(0, 22) + 'â€¦' : n.sub}
                       </text>
                     )}
                     {n.badge && (
@@ -994,18 +991,24 @@ export default function App() {
 
             {parsed.errors.length > 0 && (
               <div className="canvas-empty-state">
-                <span>↯</span>
+                <span>â†¯</span>
                 <b>Preview paused at line {parsed.errors[0].line}</b>
                 <small>Fix the syntax in the editor to continue.</small>
               </div>
             )}
 
             <div className="canvas-corner">
-              {model.nodes.length} ELEMENTS <span>·</span> SVG 1.1
+              {model.nodes.length} ELEMENTS <span>Â·</span> SVG 1.1
             </div>
           </div>
         </section>
       </section>
+
+      <DocsModal
+        isOpen={docsOpen}
+        onClose={() => setDocsOpen(false)}
+        onInsertCode={(snippet) => { setSource(prev => prev + '\n' + snippet); }}
+      />
     </main>
   );
 }

@@ -2,7 +2,7 @@ export type Shape = 'card' | 'circle' | 'pill' | 'cylinder' | 'diamond' | 'hexag
 export type EdgeKind = 'solid' | 'async' | 'stream' | 'sync';
 export type NodeDef = { id: string; label: string; sub?: string; icon?: string; shape: Shape; badge?: string; accent?: string; image?: string; group?: string; position?: { x: number; y: number } };
 export type EdgeDef = { from: string; to: string; kind: EdgeKind; label?: string };
-export type Diagram = { nodes: NodeDef[]; edges: EdgeDef[]; groups: { id: string; label: string; style: string }[]; direction: 'LR' | 'TD'; theme: 'blueprint' | 'noir' | 'paper'; errors: { line: number; message: string }[] };
+export type Diagram = { nodes: NodeDef[]; edges: EdgeDef[]; groups: { id: string; label: string; style: string }[]; direction: 'LR' | 'TD'; theme: 'blueprint' | 'noir' | 'paper' | 'frost' | 'editorial'; errors: { line: number; message: string }[] };
 export const exampleAssets: Record<string,string> = {
   'demo-avatar': "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='24' fill='%2367d7ef'/%3E%3Cpath d='M13 33c2-13 20-13 22 0' fill='none' stroke='%2309090b' stroke-width='3'/%3E%3Ccircle cx='24' cy='17' r='7' fill='%2309090b'/%3E%3C/svg%3E"
 };
@@ -73,7 +73,7 @@ export function parse(source: string): Diagram {
     }
     if (!line) return;
     if (/^direction\s+(LR|TD)$/i.test(line)) { diagram.direction = line.slice(-2).toUpperCase() as 'LR' | 'TD'; return; }
-    if (/^theme\s+(blueprint|noir|paper)$/i.test(line)) { diagram.theme = line.split(/\s+/)[1].toLowerCase() as Diagram['theme']; return; }
+    if (/^theme\s+(blueprint|noir|paper|frost|editorial)$/i.test(line)) { diagram.theme = line.split(/\s+/)[1].toLowerCase() as Diagram['theme']; return; }
     const group = line.match(/^group\s+"([^"]+)"\s*(?:\[([^\]]*)\])?\s*\{/);
     if (group) { diagram.groups.push({ id: group[1], label: group[1], style: attrs(group[2] || '').style || 'solid' }); groupStack.push(group[1]); return; }
     if (line === '}') { if (!groupStack.pop()) diagram.errors.push({ line: index + 1, message: 'Unexpected closing group.' }); return; }
