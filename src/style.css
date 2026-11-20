@@ -190,6 +190,24 @@ button { touch-action: manipulation; }
   background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
+.export-dropdown .custom-dropdown-trigger {
+  padding: 0 12px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  gap: 6px;
+}
+.export-dropdown .custom-dropdown-trigger:hover {
+  color: var(--ink);
+  border-color: var(--muted);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+.export-dropdown.is-open .custom-dropdown-trigger {
+  color: var(--ink);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
 .trigger-text-block {
   display: flex;
   flex-direction: column;

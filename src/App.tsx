@@ -551,15 +551,16 @@ export default function App() {
 
         <Dropdown
           align="right"
+          className="export-dropdown"
           options={exportOptions}
           onChange={handleExportAction}
           triggerContent={(_, isOpen) => (
-            <div className="toolbar-btn" style={{ gap: '6px' }}>
+            <>
               <span>Export</span>
               <span className={`dropdown-chevron ${isOpen ? 'is-open' : ''}`}>
                 <Icon name="chevron-down" width="13" height="13" />
               </span>
-            </div>
+            </>
           )}
         />
       </header>
