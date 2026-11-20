@@ -5,6 +5,7 @@ import { exampleAssets, parse, presets } from './dsl';
 import { serializeSvg } from './exporter';
 import { Dropdown } from './components/Dropdown';
 import { DocsModal } from './components/DocsModal';
+import { AiPromptModal } from './components/AiPromptModal';
 import './style.css';
 import './interactions.css';
 
@@ -85,6 +86,7 @@ export default function App() {
   const [template, setTemplate] = useState(presets[0].name);
   const [theme, setTheme] = useState<'blueprint' | 'noir' | 'paper' | 'frost' | 'editorial'>('blueprint');
   const [docsOpen, setDocsOpen] = useState(false);
+  const [aiPromptOpen, setAiPromptOpen] = useState(false);
   const [flow, setFlow] = useState(true);
   const [drawer, setDrawer] = useState(() => {
     try {
@@ -674,9 +676,20 @@ export default function App() {
               <span>Diagram source</span>
               <span className="language-pill">GLYPH DSL</span>
             </div>
-            <button className="subtle-btn" onClick={() => setDocsOpen(true)}>
-              Syntax guide <span>↗</span>
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                className="subtle-btn ai-prompt-btn"
+                onClick={() => setAiPromptOpen(true)}
+                title="Get AI Master Prompt for ChatGPT, Claude, and Gemini"
+                style={{ color: 'var(--accent)', fontWeight: 500 }}
+              >
+                <Icon name="spark" width="13" height="13" />
+                <span>AI Prompt</span>
+              </button>
+              <button className="subtle-btn" onClick={() => setDocsOpen(true)}>
+                Syntax guide <span>↗</span>
+              </button>
+            </div>
           </div>
 
           <div className="editor-wrap">
@@ -1007,6 +1020,12 @@ export default function App() {
         isOpen={docsOpen}
         onClose={() => setDocsOpen(false)}
         onInsertCode={(snippet) => { setSource(prev => prev + '\n' + snippet); }}
+      />
+
+      <AiPromptModal
+        isOpen={aiPromptOpen}
+        onClose={() => setAiPromptOpen(false)}
+        onInsertCode={(snippet) => { setSource(snippet); }}
       />
     </main>
   );

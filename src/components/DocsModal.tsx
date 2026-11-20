@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Icon, iconNames } from '../icons';
+import { AI_MASTER_PROMPT } from './AiPromptModal';
 
 interface DocsModalProps {
   isOpen: boolean;
@@ -8,7 +9,7 @@ interface DocsModalProps {
 }
 
 export function DocsModal({ isOpen, onClose, onInsertCode }: DocsModalProps) {
-  const [activeTab, setActiveTab] = useState<'quickstart' | 'nodes' | 'edges' | 'groups' | 'themes' | 'icons'>('quickstart');
+  const [activeTab, setActiveTab] = useState<'quickstart' | 'nodes' | 'edges' | 'groups' | 'themes' | 'icons' | 'aiprompt'>('quickstart');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export function DocsModal({ isOpen, onClose, onInsertCode }: DocsModalProps) {
           <button className={activeTab === 'groups' ? 'is-active' : ''} onClick={() => setActiveTab('groups')}>Groups</button>
           <button className={activeTab === 'themes' ? 'is-active' : ''} onClick={() => setActiveTab('themes')}>Themes & Layout</button>
           <button className={activeTab === 'icons' ? 'is-active' : ''} onClick={() => setActiveTab('icons')}>Icons Reference</button>
+          <button className={activeTab === 'aiprompt' ? 'is-active' : ''} onClick={() => setActiveTab('aiprompt')} style={{ color: 'var(--accent)' }}>✦ AI Prompt</button>
         </div>
 
         <div className="docs-body">
@@ -282,6 +284,37 @@ Orders -> Postgres`}</code></pre>
                     <span>{name}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'aiprompt' && (
+            <div className="docs-section">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <div>
+                  <h3 style={{ margin: '0 0 4px' }}>AI Master Prompt</h3>
+                  <p style={{ margin: 0, fontSize: '12px' }}>
+                    Copy and paste this into ChatGPT, Claude, or Gemini to have AI write perfect Glyph diagrams for you:
+                  </p>
+                </div>
+                <button
+                  className="subtle-btn"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(AI_MASTER_PROMPT);
+                    setCopiedIndex(777);
+                    setTimeout(() => setCopiedIndex(null), 1800);
+                  }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <Icon name={copiedIndex === 777 ? 'check' : 'copy'} width="13" height="13" />
+                  <span>{copiedIndex === 777 ? 'Copied to clipboard!' : 'Copy Master Prompt'}</span>
+                </button>
+              </div>
+
+              <div className="docs-code-block" style={{ maxHeight: '380px', overflowY: 'auto' }}>
+                <pre>
+                  <code>{AI_MASTER_PROMPT}</code>
+                </pre>
               </div>
             </div>
           )}
