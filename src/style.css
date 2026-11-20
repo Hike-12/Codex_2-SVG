@@ -8,9 +8,34 @@
   font-optical-sizing: auto;
   font-size: 14px;
   font-weight: 400;
+  --page-scroll-track: #09090b;
+  --page-scroll-thumb: #29292e;
+  --page-scroll-hover: #92929a;
+  scrollbar-width: thin;
+  scrollbar-color: var(--page-scroll-thumb) var(--page-scroll-track);
 }
 
+:root[data-theme="noir"] {
+  --page-scroll-thumb: #2a2a2e;
+}
+
+:root[data-theme="paper"] {
+  --page-scroll-track: #f4f2ed;
+  --page-scroll-thumb: #ddd9d0;
+  --page-scroll-hover: #858176;
+}
+
+html::-webkit-scrollbar { width: 8px; height: 8px; }
+html::-webkit-scrollbar-track { background: var(--page-scroll-track); }
+html::-webkit-scrollbar-thumb { border: 2px solid var(--page-scroll-track); border-radius: 8px; background: var(--page-scroll-thumb); }
+html::-webkit-scrollbar-thumb:hover { background: var(--page-scroll-hover); }
+
 * { box-sizing: border-box; }
+.app-shell * { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.app-shell *::-webkit-scrollbar { width: 8px; height: 8px; }
+.app-shell *::-webkit-scrollbar-track { background: transparent; }
+.app-shell *::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 8px; background: var(--line); background-clip: padding-box; }
+.app-shell *::-webkit-scrollbar-thumb:hover { background: var(--muted); background-clip: padding-box; }
 body { margin: 0; min-width: 320px; min-height: 100vh; }
 button, select, input, textarea { font: inherit; }
 button { color: inherit; }
