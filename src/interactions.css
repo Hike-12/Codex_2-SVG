@@ -1,4 +1,3 @@
-.editor-pane{flex:0 0 var(--editor-width,38%);width:auto;max-width:none;min-width:280px}
 .splitter{width:6px;flex:none;background:var(--line);cursor:col-resize;touch-action:none;z-index:2;transition:background .15s}
 .splitter:hover,.splitter:focus{background:var(--accent)}
 .editor-wrap{padding:15px 0 0;overflow:hidden}
@@ -18,4 +17,4 @@
 .export-btn{color:#f5f4f7}
 .export-btn span{color:#aaaab2}
 .asset-warning{color:#e3a9ad;font-size:9px;line-height:1.4}
-@media(max-width:1120px){.editor-pane{min-width:260px}.splitter{width:5px}}
+@media(max-width:1120px){.splitter{width:5px}}
