@@ -7,6 +7,8 @@ describe('standalone SVG export', () => {
     const out=serializeSvg(svg);
     expect(out.startsWith('<?xml version="1.0"')).toBe(true);
     expect(out).toContain('xmlns="http://www.w3.org/2000/svg"');
+    expect(out).toContain('width="100"');
+    expect(out).toContain('height="100"');
     expect(out).toContain('<clipPath');
     expect(out).toContain('clip-path="url(#avatar)"');
     expect(out).toContain('<animateMotion');
