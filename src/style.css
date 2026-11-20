@@ -886,6 +886,21 @@ button { touch-action: manipulation; }
   border-radius: 50%;
   background: #10b981;
 }
+.export-toast {
+  position: fixed;
+  z-index: 100;
+  right: 20px;
+  bottom: 20px;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+  font-size: 13px;
+  line-height: 1.4;
+}
 .editor-footer b { padding: 0 4px; color: var(--line); }
 
 .error-banner {

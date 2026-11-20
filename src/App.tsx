@@ -108,6 +108,7 @@ export default function App() {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [panning, setPanning] = useState<{ x: number; y: number; px: number; py: number } | null>(null);
   const [assetWarning, setAssetWarning] = useState('');
+  const [exportNotice, setExportNotice] = useState('');
   const [assets, setAssets] = useState<Record<string, string>>(() => {
     try {
       return { ...exampleAssets, ...JSON.parse(localStorage.getItem('glyph-assets') || '{}') };
@@ -401,38 +402,101 @@ export default function App() {
 
   const svgText = () => svgRef.current ? serializeSvg(new XMLSerializer().serializeToString(svgRef.current), flow, colors) : '';
 
-  const png = () => {
-    const img = new Image();
-    const url = URL.createObjectURL(new Blob([svgText()], { type: 'image/svg+xml' }));
-    img.onload = () => {
-      const c = document.createElement('canvas');
-      c.width = img.width * 2;
-      c.height = img.height * 2;
-      const ctx = c.getContext('2d');
-      if (ctx) {
-        ctx.scale(2, 2);
-        ctx.drawImage(img, 0, 0);
-        c.toBlob(b => {
-          if (b) {
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(b);
-            a.download = 'glyph-craft-diagram.png';
-            a.click();
-          }
-        });
+  const transparentPng = async (mode: 'light' | 'dark', action: 'copy' | 'download') => {
+    const palette = mode === 'light'
+      ? { panel: '#fffefa', line: '#d7d3cb', text: '#282721', muted: '#6f6a60', accent: colors.accent }
+      : { panel: '#111114', line: '#45454e', text: '#f3f2f2', muted: '#a6a6af', accent: colors.accent };
+    const markup = svgRef.current
+      ? serializeSvg(new XMLSerializer().serializeToString(svgRef.current), false, palette, true)
+      : '';
+    if (!markup) return;
+
+    const imageBlob = new Promise<Blob>((resolve, reject) => {
+      const image = new Image();
+      const imageUrl = URL.createObjectURL(new Blob([markup], { type: 'image/svg+xml' }));
+      const cleanup = () => URL.revokeObjectURL(imageUrl);
+      image.onerror = () => { cleanup(); reject(new Error('Could not render the diagram as a PNG.')); };
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width * 2;
+        canvas.height = image.height * 2;
+        const context = canvas.getContext('2d');
+        if (!context) { cleanup(); reject(new Error('PNG export is unavailable in this browser.')); return; }
+        context.scale(2, 2);
+        context.drawImage(image, 0, 0);
+        canvas.toBlob(blob => {
+          cleanup();
+          blob ? resolve(blob) : reject(new Error('Could not create a PNG from the diagram.'));
+        }, 'image/png');
+      };
+      image.src = imageUrl;
+    });
+
+    try {
+      if (action === 'copy') {
+        if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined') {
+          throw new Error('PNG clipboard copy is not supported in this browser.');
+        }
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': imageBlob })]);
+        setExportNotice(`Copied transparent ${mode} PNG`);
+      } else {
+        const blob = await imageBlob;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `glyph-craft-diagram-${mode}-transparent.png`;
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        setExportNotice(`Downloaded transparent ${mode} PNG`);
       }
-      URL.revokeObjectURL(url);
-    };
-    img.src = url;
+    } catch (error) {
+      setExportNotice(error instanceof Error ? error.message : 'PNG export failed.');
+    }
+    window.setTimeout(() => setExportNotice(''), 2800);
+  };
+
+  const png = async () => {
+    const imageUrl = URL.createObjectURL(new Blob([svgText()], { type: 'image/svg+xml' }));
+    try {
+      const image = new Image();
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        image.onerror = () => reject(new Error('Could not render the diagram as a PNG.'));
+        image.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = image.width * 2;
+          canvas.height = image.height * 2;
+          const context = canvas.getContext('2d');
+          if (!context) { reject(new Error('PNG export is unavailable in this browser.')); return; }
+          context.scale(2, 2);
+          context.drawImage(image, 0, 0);
+          canvas.toBlob(result => result ? resolve(result) : reject(new Error('Could not create a PNG from the diagram.')), 'image/png');
+        };
+        image.src = imageUrl;
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'glyph-craft-diagram.png';
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      setExportNotice(error instanceof Error ? error.message : 'PNG export failed.');
+      window.setTimeout(() => setExportNotice(''), 2800);
+    } finally {
+      URL.revokeObjectURL(imageUrl);
+    }
   };
 
   const handleExportAction = (action: string) => {
     if (action === 'svg') {
       saveFile('glyph-craft-diagram.svg', svgText(), 'image/svg+xml');
     } else if (action === 'png') {
-      png();
+      void png();
     } else if (action === 'copy') {
       navigator.clipboard.writeText(svgText());
+    } else if (action.startsWith('png-')) {
+      const [, operation, mode] = action.split('-') as ['png', 'copy' | 'download', 'light' | 'dark'];
+      void transparentPng(mode, operation);
     }
   };
 
@@ -471,8 +535,12 @@ export default function App() {
   ];
   const exportOptions = [
     { value: 'svg', label: 'Animated SVG', icon: 'download' },
-    { value: 'png', label: '2× Retina PNG', icon: 'image' },
-    { value: 'copy', label: 'Copy SVG Code', icon: 'copy' }
+    { value: 'png', label: '2× Retina PNG (current theme)', icon: 'image' },
+    { value: 'copy', label: 'Copy SVG Code', icon: 'copy' },
+    { value: 'png-download-light', label: 'Download transparent PNG · Light', icon: 'download' },
+    { value: 'png-copy-light', label: 'Copy transparent PNG · Light', icon: 'copy' },
+    { value: 'png-download-dark', label: 'Download transparent PNG · Dark', icon: 'download' },
+    { value: 'png-copy-dark', label: 'Copy transparent PNG · Dark', icon: 'copy' }
   ];
 
   return (
@@ -1027,6 +1095,7 @@ export default function App() {
         onClose={() => setAiPromptOpen(false)}
         onInsertCode={(snippet) => { setSource(snippet); }}
       />
+      {exportNotice && <div className="export-toast" role="status" aria-live="polite">{exportNotice}</div>}
     </main>
   );
 }
