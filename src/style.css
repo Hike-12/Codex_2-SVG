@@ -1,30 +1,30 @@
 :root {
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: #eeedf0;
-  background: #060709;
+  color: #e6e8ee;
+  background: #040507;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   font-optical-sizing: auto;
   font-size: 14px;
   font-weight: 400;
-  --page-scroll-track: #060709;
-  --page-scroll-thumb: #171a22;
-  --page-scroll-hover: #7e8494;
+  --page-scroll-track: #040507;
+  --page-scroll-thumb: #141620;
+  --page-scroll-hover: #646979;
   scrollbar-width: thin;
   scrollbar-color: var(--page-scroll-thumb) var(--page-scroll-track);
 }
 
 :root[data-theme="noir"] {
-  --page-scroll-track: #030304;
-  --page-scroll-thumb: #15151c;
-  --page-scroll-hover: #757784;
+  --page-scroll-track: #000000;
+  --page-scroll-thumb: #131315;
+  --page-scroll-hover: #5c5c64;
 }
 
 :root[data-theme="paper"] {
-  --page-scroll-track: #f6f5f0;
-  --page-scroll-thumb: #e3dfd6;
-  --page-scroll-hover: #757166;
+  --page-scroll-track: #060504;
+  --page-scroll-thumb: #181512;
+  --page-scroll-hover: #756c62;
 }
 
 html::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -54,24 +54,23 @@ button { touch-action: manipulation; }
   overflow: hidden;
   background: var(--bg);
   color: var(--ink);
-  transition: background .2s ease, color .2s ease;
+  transition: background .25s ease, color .25s ease;
 }
 
 /* TOPBAR */
 .topbar {
-  z-index: 10;
+  position: relative;
+  z-index: 100;
   display: flex;
   flex: none;
   align-items: center;
   gap: 12px;
   height: 56px;
   padding: 0 16px;
-  overflow-x: auto;
+  overflow: visible !important; /* CRITICAL: Must be visible so dropdowns aren't clipped */
   border-bottom: 1px solid var(--line);
   background: var(--panel);
-  scrollbar-width: none;
 }
-.topbar::-webkit-scrollbar { display: none; }
 
 .icon-btn {
   display: inline-flex;
@@ -85,12 +84,15 @@ button { touch-action: manipulation; }
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  transition: background .15s ease, color .15s ease, border-color .15s ease;
+  transition: background .18s ease, color .18s ease, border-color .18s ease, transform .15s ease;
 }
 .icon-btn:hover {
-  background: color-mix(in srgb, var(--ink) 5%, transparent);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
   color: var(--ink);
   border-color: var(--line);
+}
+.icon-btn:active {
+  transform: scale(0.95);
 }
 .icon-btn.is-active {
   background: color-mix(in srgb, var(--accent) 12%, transparent);
@@ -108,6 +110,7 @@ button { touch-action: manipulation; }
   letter-spacing: -.3px;
   color: var(--ink);
   margin-right: 4px;
+  cursor: default;
 }
 .brand-mark {
   display: grid;
@@ -115,8 +118,15 @@ button { touch-action: manipulation; }
   height: 26px;
   place-items: center;
   border-radius: 6px;
-  background: var(--accent);
-  color: var(--bg);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  transition: transform .25s cubic-bezier(0.34, 1.56, 0.64, 1), background .2s ease, color .2s ease;
+}
+.brand:hover .brand-mark {
+  transform: rotate(-8deg) scale(1.08);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
 }
 .brand-mark svg {
   width: 17px;
@@ -137,7 +147,12 @@ button { touch-action: manipulation; }
   display: inline-flex;
   align-items: center;
   flex: none;
+  z-index: 110;
 }
+.custom-dropdown-container.is-open {
+  z-index: 1000;
+}
+
 .custom-dropdown-trigger {
   display: flex;
   align-items: center;
@@ -149,11 +164,14 @@ button { touch-action: manipulation; }
   background: color-mix(in srgb, var(--bg) 60%, transparent);
   color: var(--ink);
   cursor: pointer;
-  transition: border-color .15s ease, background .15s ease, color .15s ease;
+  transition: border-color .15s ease, background .15s ease, color .15s ease, transform .12s ease;
 }
 .custom-dropdown-trigger:hover {
   border-color: var(--muted);
   background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+.custom-dropdown-trigger:active {
+  transform: scale(0.98);
 }
 .custom-dropdown-container.is-open .custom-dropdown-trigger {
   border-color: var(--accent);
@@ -185,35 +203,37 @@ button { touch-action: manipulation; }
   align-items: center;
   justify-content: center;
   color: var(--muted);
-  transition: transform .2s cubic-bezier(0.16, 1, 0.3, 1), color .15s ease;
+  transition: transform .25s cubic-bezier(0.34, 1.56, 0.64, 1), color .15s ease;
 }
 .dropdown-chevron.is-open {
   transform: rotate(180deg);
-  color: var(--accent);
+  color: var(--ink);
 }
 
-/* Custom Dropdown Menu with slight spacing */
+/* Custom Dropdown Menu with slight spacing & spring motion */
 .custom-dropdown-menu {
   position: absolute;
-  z-index: 50;
-  top: calc(100% + 6px); /* Clean slight spacing between button and menu */
-  min-width: 190px;
-  padding: 5px;
+  z-index: 99999;
+  top: calc(100% + 8px); /* Clean slight spacing between button and menu */
+  min-width: 210px;
+  padding: 6px;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 8px;
   background: var(--panel);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
-  animation: dropdownEnter .15s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.75), 0 0 0 1px color-mix(in srgb, var(--ink) 6%, transparent);
+  animation: dropdownMotion .22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top left;
+  pointer-events: auto;
 }
-.custom-dropdown-menu.align-left { left: 0; }
-.custom-dropdown-menu.align-right { right: 0; }
+.custom-dropdown-menu.align-left { left: 0; right: auto; }
+.custom-dropdown-menu.align-right { right: 0; left: auto; transform-origin: top right; }
 
-@keyframes dropdownEnter {
-  from {
+@keyframes dropdownMotion {
+  0% {
     opacity: 0;
-    transform: translateY(-4px) scale(0.98);
+    transform: translateY(-8px) scale(0.96);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
@@ -225,7 +245,7 @@ button { touch-action: manipulation; }
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 7px 10px;
+  padding: 8px 10px;
   border: 0;
   border-radius: 5px;
   background: transparent;
@@ -233,17 +253,18 @@ button { touch-action: manipulation; }
   font-size: 12px;
   text-align: left;
   cursor: pointer;
-  transition: background .12s ease, color .12s ease;
+  transition: transform .14s cubic-bezier(0.16, 1, 0.3, 1), background .12s ease, color .12s ease;
 }
 .dropdown-menu-item:hover,
 .dropdown-menu-item.is-highlighted {
   background: color-mix(in srgb, var(--ink) 6%, transparent);
   color: var(--ink);
+  transform: translateX(3px);
 }
 .dropdown-menu-item.is-selected {
   color: var(--ink);
   font-weight: 500;
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 .item-label-group {
   display: flex;
@@ -252,6 +273,11 @@ button { touch-action: manipulation; }
 }
 .item-icon {
   color: var(--muted);
+  transition: transform .15s ease;
+}
+.dropdown-menu-item:hover .item-icon {
+  transform: scale(1.1);
+  color: var(--ink);
 }
 .dropdown-menu-item.is-selected .item-icon {
   color: var(--accent);
@@ -268,7 +294,7 @@ button { touch-action: manipulation; }
   font: 9px ui-monospace, monospace;
 }
 
-/* DIRECTION SWITCH */
+/* DIRECTION SWITCH WITH MOTION */
 .direction-switch {
   display: flex;
   flex: none;
@@ -290,18 +316,21 @@ button { touch-action: manipulation; }
   color: var(--muted);
   font: 11px ui-monospace, monospace;
   cursor: pointer;
-  transition: background .15s ease, color .15s ease;
+  transition: background .15s ease, color .15s ease, transform .12s ease;
+}
+.direction-switch button:active {
+  transform: scale(0.96);
 }
 .direction-switch button span {
   display: inline-block;
-  transition: transform .18s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform .2s cubic-bezier(0.34, 1.56, 0.64, 1);
   color: var(--muted);
 }
-.direction-switch button:hover span {
-  transform: translateX(1px);
+.direction-switch button:first-child:hover span {
+  transform: translateX(3px);
 }
 .direction-switch button:last-child:hover span {
-  transform: translateY(1px);
+  transform: translateY(3px);
 }
 .direction-switch button.active {
   background: var(--line);
@@ -314,7 +343,7 @@ button { touch-action: manipulation; }
 
 .toolbar-spacer { flex: 1; }
 
-/* ACTION BUTTONS */
+/* ACTION BUTTONS WITH MOTION */
 .flow-toggle, .toolbar-btn {
   display: inline-flex;
   min-height: 36px;
@@ -330,12 +359,15 @@ button { touch-action: manipulation; }
   font-size: 12px;
   white-space: nowrap;
   cursor: pointer;
-  transition: border-color .15s ease, background .15s ease, color .15s ease;
+  transition: border-color .15s ease, background .15s ease, color .15s ease, transform .12s ease;
 }
 .flow-toggle:hover, .toolbar-btn:hover {
   border-color: var(--muted);
   color: var(--ink);
-  background: color-mix(in srgb, var(--ink) 3%, transparent);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+.flow-toggle:active, .toolbar-btn:active {
+  transform: scale(0.97);
 }
 .flow-toggle.is-on {
   color: var(--ink);
@@ -345,34 +377,40 @@ button { touch-action: manipulation; }
   height: 6px;
   border-radius: 50%;
   background: var(--muted);
-  transition: background .18s ease;
+  transition: background .2s ease, transform .2s ease;
 }
-.is-on .flow-dot {
+.flow-toggle.is-on .flow-dot {
   background: var(--accent);
-  animation: flowPulse 2s ease-in-out infinite;
+  animation: breathingPulse 2.4s ease-in-out infinite;
 }
-@keyframes flowPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.15); }
+@keyframes breathingPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.7; }
 }
 
 .reset-btn span {
   display: inline-block;
-  transition: transform .3s ease;
+  transition: transform .4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .reset-btn:hover span {
-  transform: rotate(90deg);
-  color: var(--accent);
+  transform: rotate(180deg);
+  color: var(--ink);
 }
 
+/* Primary Share Button - Clean Crisp Off-white (No loud neon!) */
 .share-btn {
-  border-color: var(--accent);
-  background: var(--accent);
+  border: 1px solid var(--ink);
+  background: var(--ink);
   color: var(--bg);
   font-weight: 500;
+  transition: transform .15s ease, opacity .15s ease;
 }
 .share-btn:hover {
-  filter: brightness(1.08);
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+.share-btn:active {
+  transform: translateY(0) scale(0.98);
 }
 .share-btn span {
   display: inline-block;
@@ -395,7 +433,7 @@ button { touch-action: manipulation; }
   flex-direction: column;
   border-right: 1px solid var(--line);
   background: var(--panel);
-  transition: width .2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width .24s cubic-bezier(0.16, 1, 0.3, 1), opacity .2s ease;
 }
 .drawer-tabs {
   display: flex;
@@ -442,11 +480,12 @@ button { touch-action: manipulation; }
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  transition: background .15s ease, color .15s ease;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
 }
 .drawer-close-btn:hover {
   background: color-mix(in srgb, var(--ink) 6%, transparent);
   color: var(--ink);
+  transform: rotate(90deg);
 }
 
 .drawer-search {
@@ -499,13 +538,16 @@ button { touch-action: manipulation; }
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  transition: background .12s ease, border-color .12s ease, color .12s ease, transform .12s ease;
+  transition: background .12s ease, border-color .12s ease, color .12s ease, transform .14s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .icon-grid button:hover {
   border-color: var(--line);
-  background: color-mix(in srgb, var(--ink) 4%, transparent);
-  color: var(--accent);
-  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+.icon-grid button:active {
+  transform: translateY(0) scale(0.95);
 }
 .icon-grid svg { width: 18px; height: 18px; }
 .icon-grid span {
@@ -573,11 +615,12 @@ button { touch-action: manipulation; }
   border: 1px solid transparent;
   border-radius: 6px;
   background: transparent;
-  transition: background .12s ease, border-color .12s ease;
+  transition: background .12s ease, border-color .12s ease, transform .12s ease;
 }
 .asset-row:hover {
   background: color-mix(in srgb, var(--ink) 4%, transparent);
   border-color: var(--line);
+  transform: translateX(2px);
 }
 .asset-row-select {
   display: flex;
@@ -618,7 +661,7 @@ button { touch-action: manipulation; }
   color: var(--muted);
   cursor: pointer;
   opacity: 0.6;
-  transition: opacity .15s ease, color .15s ease, background .15s ease, transform .15s ease;
+  transition: opacity .15s ease, color .15s ease, background .15s ease, transform .18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .asset-row:hover .asset-delete-btn {
   opacity: 1;
@@ -626,7 +669,7 @@ button { touch-action: manipulation; }
 .asset-delete-btn:hover {
   color: #ef4444;
   background: rgba(239, 68, 68, 0.12);
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 /* EDITOR PANE */
@@ -679,7 +722,7 @@ button { touch-action: manipulation; }
   color: var(--muted);
   font-size: 11px;
   cursor: pointer;
-  transition: color .15s ease, background .15s ease;
+  transition: color .15s ease, background .15s ease, transform .12s ease;
 }
 .subtle-btn:hover {
   color: var(--ink);
@@ -716,7 +759,7 @@ button { touch-action: manipulation; }
   display: block;
   height: 23px;
   line-height: 23px;
-  transition: color .15s ease;
+  transition: color .18s ease;
 }
 .line-num.is-highlighted {
   color: var(--accent);
@@ -753,11 +796,22 @@ button { touch-action: manipulation; }
   height: 23px;
   line-height: 23px;
   border-radius: 0 4px 4px 0;
-  transition: background .18s ease;
+  transition: background .2s ease;
 }
 .syntax-line.is-highlighted {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  box-shadow: inset 2px 0 0 var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent);
+  animation: lineFlash .35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes lineFlash {
+  0% {
+    background: color-mix(in srgb, var(--accent) 35%, transparent);
+    box-shadow: inset 5px 0 0 var(--accent);
+  }
+  100% {
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
 }
 
 .editor-wrap textarea {
@@ -921,11 +975,14 @@ button { touch-action: manipulation; }
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  transition: background .12s ease, color .12s ease;
+  transition: background .12s ease, color .12s ease, transform .12s ease;
 }
 .canvas-tools-group button:hover {
   background: color-mix(in srgb, var(--ink) 6%, transparent);
   color: var(--ink);
+}
+.canvas-tools-group button:active {
+  transform: scale(0.94);
 }
 .canvas-tools .zoom-reset {
   width: auto;
@@ -971,7 +1028,7 @@ button { touch-action: manipulation; }
 
 /* DIAGRAM ELEMENTS - CLEAN, UN-SLOPPED, HAIRLINE STROKES */
 .group-box {
-  fill: color-mix(in srgb, var(--panel) 30%, transparent);
+  fill: color-mix(in srgb, var(--panel) 40%, transparent);
   stroke: var(--line);
   stroke-width: 1;
   stroke-opacity: 0.8;
@@ -990,13 +1047,17 @@ button { touch-action: manipulation; }
 }
 .diagram-node {
   cursor: pointer;
+  transition: filter .15s ease;
+}
+.diagram-node:hover {
+  filter: brightness(1.08);
 }
 .diagram-node:hover .node-card {
   stroke: var(--accent);
 }
 .diagram-node.is-active .node-card {
   stroke: var(--accent);
-  stroke-width: 1.5;
+  stroke-width: 1.8;
 }
 
 .node-icon { color: var(--accent); }
@@ -1021,7 +1082,7 @@ button { touch-action: manipulation; }
 }
 .diagram-edge.is-active path:nth-child(2) {
   stroke: var(--accent);
-  stroke-width: 2.5;
+  stroke-width: 2.6;
 }
 
 .edge-label-bg {

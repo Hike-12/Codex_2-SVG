@@ -127,12 +127,12 @@ export default function App() {
   const parsed = useMemo(() => parse(source), [source]);
   const model = useMemo(() => layout(parsed, manual), [parsed, manual]);
 
-  // Deep dark themes, zero neon / harsh glare
+  // Deep dark themes with distinctive character (zero cyan neon)
   const palette = theme === 'paper'
-    ? ['#f6f5f0', '#ffffff', '#e3dfd6', '#1c1b18', '#757166', '#e5e1d8', '#2563eb']
+    ? ['#060504', '#0c0a08', '#181512', '#eee9e2', '#756c62', '#100d0a', '#d97706']
     : theme === 'noir'
-    ? ['#030304', '#09090c', '#15151c', '#efeff3', '#757784', '#101115', '#818cf8']
-    : ['#060709', '#0d0f14', '#171a22', '#f3f4f8', '#7e8494', '#131620', '#38bdf8'];
+    ? ['#000000', '#060608', '#131315', '#f2f2f4', '#5c5c64', '#09090b', '#e4e4e7']
+    : ['#040507', '#08090d', '#141620', '#e6e8ee', '#646979', '#0c0e16', '#6366f1'];
 
   const colors = {
     bg: palette[0],
@@ -456,9 +456,9 @@ export default function App() {
 
   const templateOptions = presets.map(p => ({ value: p.name, label: p.name }));
   const themeOptions = [
-    { value: 'blueprint', label: 'Blueprint (Dark)' },
-    { value: 'noir', label: 'Noir (Deep Dark)' },
-    { value: 'paper', label: 'Paper (Editorial)' }
+    { value: 'blueprint', label: 'Carbon Dusk (Slate)', badge: 'Dark' },
+    { value: 'noir', label: 'Pure Obsidian (Stealth)', badge: 'Dark' },
+    { value: 'paper', label: 'Espresso Amber (Sepia)', badge: 'Dark' }
   ];
   const exportOptions = [
     { value: 'svg', label: 'Animated SVG', icon: 'download' },

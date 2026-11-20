@@ -37,21 +37,24 @@ export function Dropdown({
 
   useEffect(() => {
     if (!isOpen) return;
-    const handleOutsideClick = (e: MouseEvent) => {
+
+    const handleOutsideClick = (e: PointerEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
+
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleOutsideClick);
-    document.addEventListener('keydown', handleKeyDown);
+
+    window.addEventListener('pointerdown', handleOutsideClick);
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('pointerdown', handleOutsideClick);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen]);
 
@@ -93,7 +96,7 @@ export function Dropdown({
       <button
         type="button"
         className="custom-dropdown-trigger"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen(open => !open)}
         onKeyDown={handleKeyDown}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
