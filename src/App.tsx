@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode, type WheelEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode, type WheelEvent } from 'react';
 import { Icon, iconNames } from './icons';
 import { layout, type PlacedNode } from './layout';
 import { exampleAssets, parse, presets } from './dsl';
@@ -99,7 +99,6 @@ export default function App() {
   const [zoom, setZoom] = useState(1);
   const [shareDone, setShareDone] = useState(false);
   const [canvasFullscreen, setCanvasFullscreen] = useState(false);
-
   const [dragging, setDragging] = useState<{ id: string; dx: number; dy: number } | null>(null);
   const [editorWidth, setEditorWidth] = useState<number | null>(null);
   const [resizing, setResizing] = useState(false);
@@ -470,7 +469,7 @@ export default function App() {
   ];
   const exportOptions = [
     { value: 'svg', label: 'Animated SVG', icon: 'download' },
-    { value: 'png', label: '2Ã— Retina PNG', icon: 'image' },
+    { value: 'png', label: '2× Retina PNG', icon: 'image' },
     { value: 'copy', label: 'Copy SVG Code', icon: 'copy' }
   ];
 
@@ -509,14 +508,14 @@ export default function App() {
             onClick={() => setDirective('direction', 'LR')}
             title="Left to right layout"
           >
-            LR <span>â†’</span>
+            LR <span>→</span>
           </button>
           <button
             className={parsed.direction === 'TD' ? 'active' : ''}
             onClick={() => setDirective('direction', 'TD')}
             title="Top to down layout"
           >
-            TD <span>â†“</span>
+            TD <span>↓</span>
           </button>
         </div>
 
@@ -543,11 +542,11 @@ export default function App() {
         </button>
 
         <button className="toolbar-btn reset-btn" onClick={reset} title="Reset manual node positions">
-          <span>â†»</span> Reset layout
+          <span>↻</span> Reset layout
         </button>
 
         <button className="toolbar-btn share-btn" onClick={share} title="Copy diagram link to clipboard">
-          <span>{shareDone ? 'âœ“' : 'âŒ'}</span> {shareDone ? 'Copied' : 'Share'}
+          <span>{shareDone ? '✓' : '⌁'}</span> {shareDone ? 'Copied' : 'Share'}
         </button>
 
         <Dropdown
@@ -610,7 +609,7 @@ export default function App() {
                     ))}
                 </div>
                 <div className="drawer-hint">
-                  <span>â†³</span> Click an icon to add it to your code
+                  <span>↳</span> Click an icon to add it to your code
                 </div>
               </>
             ) : (
@@ -629,9 +628,9 @@ export default function App() {
                     accept="image/png,image/jpeg,image/webp,image/svg+xml"
                     onChange={e => upload(e.target.files?.[0])}
                   />
-                  <b>â†‘</b>
+                  <b>↑</b>
                   <strong>Drop an image here</strong>
-                  <span>or browse Â· PNG, JPG, SVG</span>
+                  <span>or browse · PNG, JPG, SVG</span>
                 </label>
                 {assetWarning && <p className="asset-warning">{assetWarning}</p>}
                 {Object.entries(assets).map(([name, url]) => (
@@ -670,12 +669,12 @@ export default function App() {
         >
           <div className="pane-header">
             <div className="pane-title">
-              <span className="code-icon">âŒ˜</span>
+              <span className="code-icon">⌘</span>
               <span>Diagram source</span>
               <span className="language-pill">GLYPH DSL</span>
             </div>
             <button className="subtle-btn" onClick={() => setDocsOpen(true)}>
-              Syntax guide <span>â†—</span>
+              Syntax guide <span>↗</span>
             </button>
           </div>
 
@@ -738,10 +737,9 @@ export default function App() {
               <i className="status-light" /> Live
             </span>
             <span>
-              {parsed.nodes.length} nodes <b>Â·</b> {parsed.edges.length} connections
+              {parsed.nodes.length} nodes <b>·</b> {parsed.edges.length} connections
             </span>
           </div>
-
         </div>
 
         <div
@@ -776,7 +774,7 @@ export default function App() {
             </div>
             <div className="canvas-tools">
               <div className="canvas-tools-group">
-                <button onClick={() => setZoom(z => Math.max(.45, z / 1.12))} aria-label="Zoom out">âˆ’</button>
+                <button onClick={() => setZoom(z => Math.max(.45, z / 1.12))} aria-label="Zoom out">−</button>
                 <button
                   className="zoom-value zoom-reset"
                   onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
@@ -791,7 +789,7 @@ export default function App() {
                   aria-label="Reset view"
                   onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
                 >
-                  â†º
+                  ↺
                 </button>
                 <button
                   className="fullscreen-btn"
@@ -966,7 +964,7 @@ export default function App() {
                       textAnchor={centered ? 'middle' : undefined}
                       className="node-title"
                     >
-                      {n.label.length > (centered ? 16 : 20) ? n.label.slice(0, centered ? 15 : 19) + 'â€¦' : n.label}
+                      {n.label.length > (centered ? 16 : 20) ? n.label.slice(0, centered ? 15 : 19) + '…' : n.label}
                     </text>
                     {n.sub && (
                       <text
@@ -975,7 +973,7 @@ export default function App() {
                         textAnchor={centered ? 'middle' : undefined}
                         className="node-sub"
                       >
-                        {n.sub.length > 23 ? n.sub.slice(0, 22) + 'â€¦' : n.sub}
+                        {n.sub.length > 23 ? n.sub.slice(0, 22) + '…' : n.sub}
                       </text>
                     )}
                     {n.badge && (
@@ -991,14 +989,14 @@ export default function App() {
 
             {parsed.errors.length > 0 && (
               <div className="canvas-empty-state">
-                <span>â†¯</span>
+                <span>↯</span>
                 <b>Preview paused at line {parsed.errors[0].line}</b>
                 <small>Fix the syntax in the editor to continue.</small>
               </div>
             )}
 
             <div className="canvas-corner">
-              {model.nodes.length} ELEMENTS <span>Â·</span> SVG 1.1
+              {model.nodes.length} ELEMENTS <span>·</span> SVG 1.1
             </div>
           </div>
         </section>
