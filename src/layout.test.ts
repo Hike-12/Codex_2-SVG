@@ -23,4 +23,12 @@ describe('deterministic layout', () => {
     expect(group.x).toBeLessThan(Math.min(...members.map(n=>n.x)));
     expect(group.y+group.h).toBeGreaterThan(Math.max(...members.map(n=>n.y+n.h)));
   });
+  it('orders a crossed layer by its neighbor barycenters and keeps circles round', () => {
+    const d=parse('A -> D\nB -> C\nC [shape: circle]');
+    const result=layout(d);
+    const rankOne=result.nodes.filter(n=>n.x>64).sort((a,b)=>a.y-b.y);
+    expect(rankOne.map(n=>n.id)).toEqual(['D','C']);
+    const circle=result.nodes.find(n=>n.id==='C')!;
+    expect(circle.w).toBe(circle.h);
+  });
 });

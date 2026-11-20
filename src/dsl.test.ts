@@ -28,4 +28,20 @@ describe('diagram DSL', () => {
   it('reads top-level direction and theme directives', () => {
     expect(parse('direction TD\ntheme paper\nA -> B')).toMatchObject({direction:'TD',theme:'paper'});
   });
+  it('supports inline node definitions and unquoted self-contained image data', () => {
+    const d=parse('Client -> Worker [shape: hexagon, icon: cpu, sub: "fast", img: data:image/svg+xml;base64,PHN2Zy8+] ~> DB : "persist"');
+    expect(d.nodes[1]).toMatchObject({id:'Worker',shape:'hexagon',icon:'cpu',sub:'fast',image:'data:image/svg+xml;base64,PHN2Zy8+'});
+    expect(d.edges).toEqual([{from:'Client',to:'Worker',kind:'solid'},{from:'Worker',to:'DB',kind:'async',label:'persist'}]);
+  });
+  it('applies position comments before the node and preserves quoted line comments', () => {
+    const d=parse('// @pos A: 34,56\nA "API // edge" [label: "API // edge"] // trailing comment\nA <-> B : "sync"');
+    expect(d.nodes[0]).toMatchObject({label:'API // edge',position:{x:34,y:56}});
+    expect(d.edges[0].kind).toBe('sync');
+    expect(d.errors).toHaveLength(0);
+  });
+  it('falls back safely when a shape is unknown', () => {
+    const d=parse('A [shape: octagon]');
+    expect(d.nodes[0].shape).toBe('card');
+    expect(d.errors[0].message).toContain('Unknown shape');
+  });
 });

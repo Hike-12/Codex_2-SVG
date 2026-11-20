@@ -3,8 +3,9 @@ export type PlacedNode = NodeDef & { x: number; y: number; w: number; h: number 
 export type PlacedEdge = { from: PlacedNode; to: PlacedNode; kind: string; label?: string; d: string; lx: number; ly: number };
 export type GroupBox = { id: string; label: string; x: number; y: number; w: number; h: number; style: string };
 const measure = (n: NodeDef) => {
+  if (n.shape === 'circle') return { w: 148, h: 148 };
   const width = Math.max(174, Math.min(250, 84 + n.label.length * 8 + (n.sub ? n.sub.length * 1.2 : 0)));
-  const height = n.shape === 'circle' ? 132 : n.shape === 'pill' ? 62 : 82;
+  const height = n.shape === 'pill' ? 62 : n.sub ? 86 : 76;
   return { w: width, h: height };
 };
 export function layout(diagram: Diagram, manual: Record<string, { x: number; y: number }> = {}) {
@@ -27,21 +28,31 @@ export function layout(diagram: Diagram, manual: Record<string, { x: number; y: 
   }
   const buckets = new Map<number, NodeDef[]>();
   for (const n of diagram.nodes) { const r = rank.get(n.id) ?? 0; buckets.set(r, [...(buckets.get(r) ?? []), n]); }
-  // A few stable barycenter sweeps order nodes by the average rank of their neighbors.
-  for (let sweep = 0; sweep < 3; sweep++) for (const [r, bucket] of buckets) {
-    bucket.sort((a, b) => {
-      const score = (id: string) => diagram.edges.filter(e => e.to === id).reduce((s, e) => s + (buckets.get(rank.get(e.from) ?? 0)?.findIndex(n => n.id === e.from) ?? 0), 0);
-      return score(a.id) - score(b.id) || a.id.localeCompare(b.id);
-    });
-    buckets.set(r, bucket);
+  // Alternate downward and upward barycenter sweeps to reduce crossings without external layout code.
+  for (let sweep = 0; sweep < 4; sweep++) {
+    const ranks = [...buckets.keys()].sort((a,b) => sweep % 2 ? b-a : a-b);
+    for (const r of ranks) {
+      const bucket = buckets.get(r)!;
+      const score = (id: string) => {
+        const adjacent = diagram.edges.flatMap(e => {
+          const neighbor = sweep % 2 ? (e.from === id ? e.to : undefined) : (e.to === id ? e.from : undefined);
+          const nodeRank = neighbor ? rank.get(neighbor) : undefined;
+          if (!neighbor || nodeRank === undefined || (sweep % 2 ? nodeRank <= r : nodeRank >= r)) return [];
+          const order = buckets.get(nodeRank)?.findIndex(n => n.id === neighbor) ?? -1;
+          return order >= 0 ? [order] : [];
+        });
+        return adjacent.length ? adjacent.reduce((a,b)=>a+b,0)/adjacent.length : bucket.findIndex(n=>n.id===id);
+      };
+      bucket.sort((a,b)=>score(a.id)-score(b.id)||a.id.localeCompare(b.id));
+    }
   }
   const nodes: PlacedNode[] = [];
   for (const [r, bucket] of buckets) {
     let cursor = 0;
     for (const n of bucket) {
       const { w, h } = measure(n), point = manual[n.id] || n.position;
-      const x = point?.x ?? (diagram.direction === 'LR' ? r * 290 + 64 : 64 + (cursor % 2) * 310);
-      const y = point?.y ?? (diagram.direction === 'LR' ? cursor * 138 + 64 : r * 174 + 50);
+      const x = point?.x ?? (diagram.direction === 'LR' ? r * 290 + 64 : cursor * 290 + 64);
+      const y = point?.y ?? (diagram.direction === 'LR' ? cursor * 138 + 64 : r * 210 + 64);
       nodes.push({ ...n, x, y, w, h }); cursor++;
     }
   }
@@ -71,7 +82,9 @@ export function layout(diagram: Diagram, manual: Record<string, { x: number; y: 
     const maxX = Math.max(...members.map(n => n.x+n.w)), maxY = Math.max(...members.map(n => n.y+n.h));
     return [{ id: g.id, label: g.label, x: minX-24, y: minY-58, w: maxX-minX+48, h: maxY-minY+82, style: g.style }];
   });
-  const minX = Math.min(0, ...nodes.map(n => n.x-48)), minY = Math.min(0, ...nodes.map(n => n.y-48));
-  const maxX = Math.max(980, ...nodes.map(n => n.x+n.w+64)), maxY = Math.max(600, ...nodes.map(n => n.y+n.h+64));
+  const hasFeedback = edges.some(e => diagram.direction === 'LR' ? e.to.x <= e.from.x : e.to.y <= e.from.y);
+  const margin = hasFeedback ? 144 : 32;
+  const minX = Math.min(0, ...nodes.map(n => n.x-margin), ...groups.map(g => g.x-8)), minY = Math.min(0, ...nodes.map(n => n.y-margin), ...groups.map(g => g.y-8));
+  const maxX = Math.max(980, ...nodes.map(n => n.x+n.w+margin), ...groups.map(g => g.x+g.w+8)), maxY = Math.max(600, ...nodes.map(n => n.y+n.h+margin), ...groups.map(g => g.y+g.h+8));
   return { nodes, edges, groups, viewBox: `${minX} ${minY} ${maxX-minX} ${maxY-minY}`, bounds: { x: minX, y: minY, w: maxX-minX, h: maxY-minY } };
 }
